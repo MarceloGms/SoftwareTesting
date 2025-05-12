@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 public class FR5_5_A {
 
-    static boolean[][] visited;
     static int[][] directions = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
     static Queue<int[]> queue;
 
@@ -13,9 +12,9 @@ public class FR5_5_A {
 	/* Dummy function */
     }
 
-    public static int detectObjects(float[][] image, int width, int height, float threshold){
+    public static int detectObjects(float[][] image, int width, int height, float threshold, boolean[][] visited) {
         int objects = 0;
-        visited = new boolean[height][width];
+        // visited = new boolean[height][width];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 //System.out.println("i: " + i + " j: " + j);
@@ -30,5 +29,4 @@ public class FR5_5_A {
         }
         return objects;
     }
-
 }
