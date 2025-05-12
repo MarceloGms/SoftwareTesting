@@ -125,7 +125,45 @@ public class FR5_5_ATest {
     }
 
     // Data flow testing
-    
+    @Test
+    public void testP1_validDetection() {
+        float[][] image = {{1.0f}};
+        boolean[][] visited = {{false}};
+        int result = FR5_5_A.detectObjects(image, 1, 1, 0.5f, visited);
+        assertEquals(1, result);
+    }
+
+    @Test
+    public void testP2_belowThreshold() {
+        float[][] image = {{0.5f}};
+        boolean[][] visited = {{false}};
+        int result = FR5_5_A.detectObjects(image, 1, 1, 0.7f, visited);
+        assertEquals(0, result);
+    }
+
+    @Test
+    public void testP3_widthZero() {
+        float[][] image = {{}};
+        boolean[][] visited = {{}};
+        int result = FR5_5_A.detectObjects(image, 1, 0, 0.5f, visited);
+        assertEquals(0, result);
+    }
+
+    @Test
+    public void testP4_heightZero() {
+        float[][] image = {};
+        boolean[][] visited = {};
+        int result = FR5_5_A.detectObjects(image, 0, 0, 0.5f, visited);
+        assertEquals(0, result);
+    }
+
+    @Test
+    public void testP7_partialDetection() {
+        float[][] image = {{0.2f, 0.7f}};
+        boolean[][] visited = {{false, false}};
+        int result = FR5_5_A.detectObjects(image, 2, 1, 0.5f, visited);
+        assertEquals(1, result);
+    }
 
     // Black box test cases
     
