@@ -1,6 +1,9 @@
 package com.qcs;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class FR6_17Test {
 
@@ -17,7 +20,7 @@ public class FR6_17Test {
         // Assertions
         assertEquals(0, result.length);
     }
-    
+
     @Test
     public void testPath2() {
         // P(2) = (Start, 1, 2, 3, 5, 8, 9, 10, 11, 13, 33, 2, 4, End)
@@ -247,28 +250,208 @@ public class FR6_17Test {
         assertEquals(50, result[0][0]); // No change
         assertEquals(50, result[0][1]); // No change
     }
-    
+
+
+    /* BLACKBOX */
     @Test
-    public void testMultipleRooms() {
-        // Additional test for multiple rooms
-        int[] temps = {30, 20, 25};
-        int[][] fans = {{50, 50}, {30, 30}, {40, 40}};
-        FR6_17 controller = new FR6_17("ControllerMultiRooms", 25, 2, temps, fans);
-        
-        int[][] result = controller.checkRange();
-        
-        // Assertions
-        assertEquals(3, result.length);
-        // Room 1: temps[0] > desired_temp + error
-        assertEquals(40, result[0][0]); // 50 + (10 * -1) = 40
-        assertEquals(40, result[0][1]); // 50 + (10 * -1) = 40
-        
-        // Room 2: temps[1] < desired_temp - error
-        assertEquals(40, result[1][0]); // 30 + 10 = 40
-        assertEquals(40, result[1][1]); // 30 + 10 = 40
-        
-        // Room 3: temps[2] within range
-        assertEquals(40, result[2][0]); // No change
-        assertEquals(40, result[2][1]); // No change
+    public void testTC1_AllZonesTooHot() {
+        int[] temps = {24, 25};
+        int[][] fans = {{30, 40}, {50, 60}};
+        int[][] expected = {{30, 40}, {40, 50}};
+        FR6_17 system = new FR6_17("TC1", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC2_AllZonesTooCold() {
+        int[] temps = {19, 18};
+        int[][] fans = {{30, 40}, {50, 60}};
+        int[][] expected = {{40, 50}, {60, 70}};
+        FR6_17 system = new FR6_17("TC2", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC3_AllZonesInRange() {
+        int[] temps = {21, 23};
+        int[][] fans = {{30, 40}, {50, 60}};
+        int[][] expected = {{30, 40}, {50, 60}};
+        FR6_17 system = new FR6_17("TC3", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC4_OneHotOneNormal() {
+        int[] temps = {25, 21};
+        int[][] fans = {{30, 40}, {50, 60}};
+        int[][] expected = {{20, 30}, {50, 60}};
+        FR6_17 system = new FR6_17("TC4", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC5_OneColdOneNormal() {
+        int[] temps = {21, 19};
+        int[][] fans = {{30, 40}, {50, 60}};
+        int[][] expected = {{30, 40}, {60, 70}};
+        FR6_17 system = new FR6_17("TC5", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC6_OneHotOneCold() {
+        int[] temps = {25, 19};
+        int[][] fans = {{30, 40}, {50, 60}};
+        int[][] expected = {{20, 30}, {60, 70}};
+        FR6_17 system = new FR6_17("TC6", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC7_TooHotFansAtZero() {
+        int[] temps = {25, 26};
+        int[][] fans = {{0, 0}, {0, 0}};
+        int[][] expected = {{0, 0}, {0, 0}};
+        FR6_17 system = new FR6_17("TC7", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC8_TooColdFansAtZero() {
+        int[] temps = {19, 18};
+        int[][] fans = {{0, 0}, {0, 0}};
+        int[][] expected = {{20, 20}, {20, 20}};
+        FR6_17 system = new FR6_17("TC8", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC9_TooHotNearMaxDuty() {
+        int[] temps = {25, 26};
+        int[][] fans = {{100, 95}, {90, 100}};
+        int[][] expected = {{90, 85}, {80, 90}};
+        FR6_17 system = new FR6_17("TC9", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC10_TooColdNearMinDuty() {
+        int[] temps = {19, 18};
+        int[][] fans = {{10, 15}, {5, 10}};
+        int[][] expected = {{20, 25}, {15, 20}};
+        FR6_17 system = new FR6_17("TC10", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC11_ExactTempZeroMargin() {
+        int[] temps = {22, 22};
+        int[][] fans = {{50, 60}, {70, 80}};
+        int[][] expected = {{50, 60}, {70, 80}};
+        FR6_17 system = new FR6_17("TC11", 22, 0, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC12_MinimalDeviationZeroMargin() {
+        int[] temps = {23, 21};
+        int[][] fans = {{50, 60}, {70, 80}};
+        int[][] expected = {{40, 50}, {80, 90}};
+        FR6_17 system = new FR6_17("TC12", 22, 0, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC13_NegativeTempTooHot() {
+        int[] temps = {-2, -1};
+        int[][] fans = {{30, 40}, {50, 60}};
+        int[][] expected = {{20, 30}, {40, 50}};
+        FR6_17 system = new FR6_17("TC13", -5, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC14_NegativeTempTooCold() {
+        int[] temps = {-8, -9};
+        int[][] fans = {{30, 40}, {50, 60}};
+        int[][] expected = {{40, 50}, {60, 70}};
+        FR6_17 system = new FR6_17("TC14", -5, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC15_UnevenArraySize() {
+        int[] temps = {25};
+        int[][] fans = {{30, 40, 50}};
+        int[][] expected = {{20, 30, 40}};
+        FR6_17 system = new FR6_17("TC15", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    @Test
+    public void testTC16_MultipleZonesVariousTemps() {
+        int[] temps = {25, 26, 24, 19};
+        int[][] fans = {{30}, {40}, {50}, {60}};
+        int[][] expected = {{20}, {30}, {50}, {70}};
+        FR6_17 system = new FR6_17("TC16", 22, 2, temps, fans);
+        assertArrayEquals(expected, system.checkRange());
+    }
+
+    private void runTest(String testName, int desired_temp, int error, int temp, int fanValue) {
+        int[] temps = {temp};
+        int[][] fans = {{fanValue, fanValue}};
+        FR6_17 system = new FR6_17(testName, desired_temp, error, temps, fans);
+        int[][] result = system.checkRange();
+        System.out.println(testName + " => Output Fans: " + Arrays.deepToString(result));
+    }
+
+    @Test
+    public void testAllBVA() {
+        runTest("BVA-V1", 5, 2, 8, 8);
+        runTest("BVA-V2", 6, 2, 8, 8);
+        runTest("BVA-V3", 7, 2, 8, 8);
+        runTest("BVA-V4", 14, 2, 8, 8);
+        runTest("BVA-V5", 15, 2, 8, 8);
+        runTest("BVA-V6", 16, 2, 8, 8);
+        runTest("BVA-V7", 28, 2, 8, 8);
+        runTest("BVA-V8", 29, 2, 8, 8);
+        runTest("BVA-V9", 30, 2, 8, 8);
+        runTest("BVA-V10", 38, 2, 8, 8);
+        runTest("BVA-V11", 39, 2, 8, 8);
+        runTest("BVA-V12", 40, 2, 8, 8);
+        runTest("BVA-V13", 5, 0, 8, 8);
+        runTest("BVA-V14", 5, 1, 8, 8);
+        runTest("BVA-V15", 5, 2, 8, 8);
+        runTest("BVA-V16", 5, 3, 8, 8);
+        runTest("BVA-V17", 5, 4, 8, 8);
+        runTest("BVA-V18", 5, 5, 8, 8);
+        runTest("BVA-V19", 5, 6, 8, 8);
+        runTest("BVA-V20", 5, 7, 8, 8);
+        runTest("BVA-V21", 5, 9, 8, 8);
+        runTest("BVA-V22", 5, 10, 8, 8);
+        runTest("BVA-V23", 5, 2, 5, 8);
+        runTest("BVA-V24", 5, 2, 6, 8);
+        runTest("BVA-V25", 5, 2, 7, 8);
+        runTest("BVA-V26", 5, 2, 14, 8);
+        runTest("BVA-V27", 5, 2, 15, 8);
+        runTest("BVA-V28", 5, 2, 16, 8);
+        runTest("BVA-V29", 5, 2, 29, 8);
+        runTest("BVA-V30", 5, 2, 30, 8);
+        runTest("BVA-V31", 5, 2, 31, 8);
+        runTest("BVA-V32", 5, 2, 38, 8);
+        runTest("BVA-V33", 5, 2, 39, 8);
+        runTest("BVA-V34", 5, 2, 40, 8);
+        runTest("BVA-V35", 5, 2, 8, 0);
+        runTest("BVA-V36", 5, 2, 8, 1);
+        runTest("BVA-V37", 5, 2, 8, 2);
+        runTest("BVA-V38", 5, 2, 8, 39);
+        runTest("BVA-V39", 5, 2, 8, 40);
+        runTest("BVA-V40", 5, 2, 8, 41);
+        runTest("BVA-V41", 5, 2, 8, 69);
+        runTest("BVA-V42", 5, 2, 8, 70);
+        runTest("BVA-V43", 5, 2, 8, 71);
+        runTest("BVA-V44", 5, 2, 8, 98);
+        runTest("BVA-V45", 5, 2, 8, 99);
+        runTest("BVA-V46", 5, 2, 8, 100);
     }
 }

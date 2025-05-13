@@ -22,7 +22,6 @@ public class FR6_17 {
                 sum += fans[i][j];
             }
             int fanAverage = sum / fans[i].length;
-                
             if (temps[i] > desired_temp + error) {
                   int change = fanAverage == 0 ? 20 : 10;
                   for (int j = 0; j < fans[i].length; j++) {
@@ -34,10 +33,8 @@ public class FR6_17 {
                       }
                       fans[i][j] = result;
                   }
-        
-            } else if (temps[i] < desired_temp - error) {               
+            } else if (temps[i] < desired_temp - error) {
                 int change = fanAverage == 0 ? 20 : 10;
-        
                 for (int j = 0; j < fans[i].length; j++) {
                     int result = fans[i][j] + change;
                     if (result > 100) {
