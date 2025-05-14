@@ -3,6 +3,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 public class FR6_17Test {
@@ -453,5 +454,66 @@ public class FR6_17Test {
         runTest("BVA-V44", 5, 2, 8, 98);
         runTest("BVA-V45", 5, 2, 8, 99);
         runTest("BVA-V46", 5, 2, 8, 100);
+    }
+
+    /*  */
+    @Test
+    public void test_BVA_Invalid_DesiredTempValues() {
+        int[] invalidTemps = {-1, -10, 101, 200}; // limites inválidos
+        int[] temps = {25, 26};
+        int[][] fans = {{50, 50}, {60, 60}};
+        for (int desiredTemp : invalidTemps) {
+            int finalDesiredTemp = desiredTemp;
+            assertThrows(IllegalArgumentException.class, () -> {
+                new FR6_17("zone", finalDesiredTemp, 5, temps, fans);
+            });
+        }
+    }
+
+    @Test
+    public void test_BVA_Invalid_ErrorValues() {
+        int[] invalidErrors = {-1, -10, 51, 100}; // limites inválidos
+        int[] temps = {25, 26};
+        int[][] fans = {{50, 50}, {60, 60}};
+        for (int error : invalidErrors) {
+            int finalError = error;
+            assertThrows(IllegalArgumentException.class, () -> {
+                new FR6_17("zone", 25, finalError, temps, fans);
+            });
+        }
+    }
+
+    @Test
+    public void test_BVA_Invalid_TempsAndFansSizeMismatch() {
+        int[] temps = {25, 26};
+        int[][] fans = {{50, 50}}; // tamanho não coincide com temps
+        assertThrows(IllegalArgumentException.class, () -> {
+            new FR6_17("zone", 25, 5, temps, fans);
+        });
+    }
+
+    @Test
+    public void test_BVA_Invalid_FansEmptyRow() {
+        int[] temps = {25};
+        int[][] fans = {{}};
+        assertThrows(NegativeArraySizeException.class, () -> {
+            new FR6_17("zone", 25, 5, temps, fans);
+        });
+    }
+
+    @Test
+    public void test_BVA_Invalid_NullTemps() {
+        int[][] fans = {{50, 50}};
+        assertThrows(IllegalArgumentException.class, () -> {
+            new FR6_17("zone", 25, 5, null, fans);
+        });
+    }
+
+    @Test
+    public void test_BVA_Invalid_NullFans() {
+        int[] temps = {25};
+        assertThrows(IllegalArgumentException.class, () -> {
+            new FR6_17("zone", 25, 5, temps, null);
+        });
     }
 }
